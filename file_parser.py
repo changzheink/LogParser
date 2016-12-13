@@ -69,25 +69,25 @@ class FileParser(object):
         print "keys: %r %r %r" % (self.__keys_and, self.__opt, self.__keys_or)
         fp_out = open(dirname(file_path) + "\\result\\" + basename(file_path) + "_result", "w")
         for readData in open(file_path, "r"):
-            flag = False
+            notFound = False
             linenum += 1
             #print "linenum: ", linenum, " read line: ", readData
             for keyword_and in self.__keys_and:
                 #print "keyword_and: ", keyword_and, "index: ", readData.index(keyword_and)
                 if(cmp(keyword_and, "null") == 0):
-                    flag = True
+                    notFound = True
                     break
                 try:
                     if(readData.index(keyword_and) >= 0):
                         continue
                 except ValueError:
-                    flag = True
+                    notFound = True
                     break
             #print "opt: ", self.__opt, " cmp: ", cmp(self.__opt, FileParser.OPT_OR)
             if(cmp(self.__opt, FileParser.OPT_AND) == 0):
-                if(flag == True):
+                if(notFound == True):
                     continue
-                found = False
+                found_or = False
                 for keyword_or in self.__keys_or:
                     #print "1 keyword_or: ", keyword_or
                     try:
@@ -95,14 +95,14 @@ class FileParser(object):
                             break
                         if(readData.index(keyword_or) >= 0):
                             #print "1 break"
-                            found = True
-                            flag = False
+                            found_or = True
+                            notFound = False
                     except ValueError:
-                        if(found == False):
-                            flag = True
-                    #print "1 found: ", found
-                    if(found == False):
-                        flag = True
+                        if(found_or == False):
+                            notFound = True
+                    #print "1 found_or: ", found_or
+                    if(found_or == False):
+                        notFound = True
             elif(cmp(self.__opt, FileParser.OPT_OR) == 0):
                 for keyword_or in self.__keys_or:
                     #print "2 keyword_or: ", keyword_or
@@ -110,16 +110,16 @@ class FileParser(object):
                         if(cmp(keyword_or, "null") == 0):
                             break
                         if(readData.index(keyword_or) >= 0):
-                            #print "2 flag: ", flag
-                            flag = False
+                            #print "2 notFound: ", notFound
+                            notFound = False
                             break
                     except ValueError:
                         continue
-                    flag = True
+                    notFound = True
 
-            if(flag == True):
+            if(notFound == True):
                 continue
-            #print "write line: ", "linenum: ", linenum, readData, " flag: ", flag
+            #print "write line: ", "linenum: ", linenum, readData, " notFound: ", notFound
             fp_out.write(readData)
         fp_out.close()
         return
