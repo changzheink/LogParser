@@ -115,7 +115,6 @@ class FileParser(object):
                             break
                     except ValueError:
                         continue
-                    notFound = True
 
             if(notFound == True):
                 continue
